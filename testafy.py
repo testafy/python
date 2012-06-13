@@ -46,7 +46,7 @@ class Test:
     # Returns the trt_id of the test being run,
     # which uniquely identifies it on the server (and can be used in other API
     # calls to get more information about it)
-    def run(self, async=1):
+    def run(self, async=0):
         r = self.make_request("run_test", self.args)
 
         self.args['trt_id'] = r.get('test_run_test_id', None)
@@ -73,6 +73,12 @@ class Test:
            )
 
         return r.get('status', None)
+
+    def is_done(self):
+        s = self.status()
+        if s is None:
+            return False
+        return s != "queued" and s != "running"
 
     def passed(self):
         if self.args['trt_id'] is None:
