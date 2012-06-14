@@ -10,7 +10,7 @@ class Test:
         if args is None: args = {}
 
         self.base_uri = base_uri
-        default_test = "For the site 'http://www.google.com'\nThen pass this test"
+        default_test = "For the site http://www.google.com\nThen pass this test"
 
         args.setdefault('pbehave',default_test)
         args.setdefault('asynchronous', True)
@@ -38,6 +38,9 @@ class Test:
 
         # get() assigns the second value to the key if it doesn't exist already
         self._err = r.get('error', None)
+        if self._err is not None:
+            raise ValueError(self._err)
+            
         self._msg = r.get('message', None)
 
         return r
@@ -51,9 +54,7 @@ class Test:
         self.args['trt_id'] = r.get('test_run_test_id', None)
 
         if async==0:
-            status = self.status()
-            while status == "queued" or status == "running":
-                status = self.status()
+            while not self.is_done():
                 time.sleep(1)
 
         return self.args['trt_id']
@@ -124,6 +125,15 @@ class Test:
 
         self._results = r.get('results', None)
         return self._results
+
+    def results_string(self):
+        r = self.results()
+        if r is None:
+            return None
+        def second(x):
+            return x[1]
+        lines = map(second, r)
+        return "\n".join(lines)
 
     def phrase_check(self):
         if self.args['trt_id'] is None:
