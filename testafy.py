@@ -10,10 +10,9 @@ class Test:
         if args is None: args = {}
 
         self.base_uri = base_uri
-        googletest = "For the site 'http://www.google.com'\nThen pass this test"
-        args.setdefault('verbose', 1)
-        args.setdefault('pbehave',googletest)
-        #args.setdefault('county', 'all')
+        default_test = "For the site 'http://www.google.com'\nThen pass this test"
+
+        args.setdefault('pbehave',default_test)
         args.setdefault('asynchronous', True)
         args.setdefault('trt_id', None)
 
@@ -47,7 +46,7 @@ class Test:
     # which uniquely identifies it on the server (and can be used in other API
     # calls to get more information about it)
     def run(self, async=0):
-        r = self.make_request("run_test", self.args)
+        r = self.make_request("test/run", self.args)
 
         self.args['trt_id'] = r.get('test_run_test_id', None)
 
@@ -66,7 +65,7 @@ class Test:
             return None
         if self.args['trt_id'] is None:
             return "unscheduled"
-        r = self.make_request( "test_status", 
+        r = self.make_request( "test/status", 
                 {
                     'trt_id' : self.args['trt_id'],
                 },
@@ -83,7 +82,7 @@ class Test:
     def passed(self):
         if self.args['trt_id'] is None:
             return 0
-        r = self.make_request("test_passed", 
+        r = self.make_request("test/stats/passed", 
                 {
                     "trt_id" : self.args['trt_id'],
                 }, 
@@ -93,7 +92,7 @@ class Test:
     def failed(self):
         if self.args['trt_id'] is None:
             return 0
-        r = self.make_request("test_failed", 
+        r = self.make_request("test/stats/failed", 
                 {
                     "trt_id" : self.args['trt_id'],
                 }, 
@@ -103,7 +102,7 @@ class Test:
     def planned(self):
         if self.args['trt_id'] is None:
             return 0
-        r = self.make_request("test_planned",
+        r = self.make_request("test/stats/planned",
                 {
                     "trt_id" : self.args['trt_id'],
                 },
@@ -117,7 +116,7 @@ class Test:
         if self._results != None:
             return self._results
 
-        r = self.make_request("test_results",
+        r = self.make_request("test/results",
                 {
                     "trt_id" : self.args["trt_id"],
                 },
