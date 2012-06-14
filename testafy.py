@@ -1,3 +1,7 @@
+# This is the Python API wrapper for Testafy.
+# See testafy.com for more info.
+# Copyright 2012 Grant Street Group
+
 import requests
 import json
 import time
